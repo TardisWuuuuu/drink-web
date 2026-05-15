@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>投稿 / 编辑饮品</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif;}
+    body{background:#f7f8fa;padding:30px;}
+    .box{max-width:500px;background:white;padding:30px;border-radius:16px;margin:0 auto;}
+    .back{color:#ff6b81;text-decoration:none;margin-bottom:15px;display:inline-block;}
+    h2{text-align:center;margin-bottom:25px;color:#333;}
+    .item{margin-bottom:15px;}
+    label{display:block;margin-bottom:6px;font-weight:bold;color:#444;}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:15px;}
+    button{width:100%;padding:12px;background:#ff6b81;color:white;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:10px;}
+  </style>
+</head>
+<body>
+<div class="box">
+  <a href="index.html" class="back">← 返回首页</a>
+  <h2 id="titleText">➕ 新增饮品投稿</h2>
+
+  <div class="item">
+    <label>品牌</label>
+    <input id="brand" placeholder="例：喜茶、奈雪">
+  </div>
+  <div class="item">
+    <label>饮品名称 *</label>
+    <input id="drinkName" placeholder="必填">
+  </div>
+  <div class="item">
+    <label>甜度</label>
+    <select id="sugar">
+      <option>不另外加糖</option>
+      <option>三分糖</option>
+      <option>五分糖</option>
+      <option>七分糖</option>
+      <option>全糖</option>
+    </select>
+  </div>
+  <div class="item">
+    <label>冰度</label>
+    <select id="ice">
+      <option>去冰</option>
+      <option>少冰</option>
+      <option>正常冰</option>
+      <option>热饮</option>
+    </select>
+  </div>
+  <div class="item">
+    <label>小料</label>
+    <input id="topping" placeholder="珍珠、椰果、布丁等">
+  </div>
+  <div class="item">
+    <label>口感描述</label>
+    <textarea id="desc" rows="3" placeholder="简单说说味道"></textarea>
+  </div>
+
+  <button onclick="submitData()" id="btnText">提交投稿</button>
+</div>
+
+<script>
+let editInfo = null;
+window.onload = function(){
+  let str = localStorage.getItem("editDrink");
+  if(str){
+    editInfo = JSON.parse(str);
+    document.getElementById("titleText").innerText = "✏️ 编辑饮品信息";
+    document.getElementById("btnText").innerText = "保存修改";
+    document.getElementById("brand").value = editInfo.brand||"";
+    document.getElementById("drinkName").value = editInfo.name||"";
+    document.getElementById("sugar").value = editInfo.sugar||"不另外加糖";
+    document.getElementById("ice").value = editInfo.ice||"去冰";
+    document.getElementById("topping").value = editInfo.topping||"";
+    document.getElementById("desc").value = editInfo.desc||"";
+    localStorage.removeItem("editDrink");
+  }
+};
+
+async function submitData(){
+  let name = document.getElementById("drinkName").value.trim();
+  if(!name) return alert("请填写饮品名称！");
+  let data = {
+    brand:document.getElementById("brand").value.trim(),
+    name:name,
+    sugar:document.getElementById("sugar").value,
+    ice:document.getElementById("ice").value,
+    topping:document.getElementById("topping").value.trim(),
+    desc:document.getElementById("desc").value.trim()
+  };
+  if(editInfo){
+    let res = await fetch("/api/list");
+    let list = await res.json();
+    list[editInfo.idx] = {...list[editInfo.idx],...data};
+    await fetch("/api/saveAll",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(list)
+    });
+    alert("修改成功");
+  }else{
+    await fetch("/api/add",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(data)
+    });
+    alert("投稿成功");
+  }
+  location.href="index.html";
+}
+</script>
+</body>
+</html>

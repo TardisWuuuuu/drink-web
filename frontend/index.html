@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>饮品评分评论系统</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif;}
+    body{background:#f7f8fa;padding:20px;}
+    .container{max-width:800px;margin:0 auto;}
+    .header{text-align:center;margin:30px 0;}
+    .header h1{font-size:28px;color:#333;margin-bottom:10px;}
+    .btn-bar{display:flex;gap:12px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;}
+    .btn{padding:12px 24px;border-radius:12px;border:none;font-size:15px;font-weight:bold;cursor:pointer;background:#ff6b81;color:white;text-decoration:none;}
+    .btn.blue{background:#54a0ff;}
+    .btn.green{background:#2ed573;}
+    .btn.danger{background:#ee5a52;}
+    .card{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+    .card h3{font-size:19px;margin-bottom:8px;color:#222;}
+    .info{color:#666;font-size:14px;margin-bottom:6px;}
+    .desc{color:#444;margin-bottom:12px;font-size:15px;}
+    .rating{color:#ffba00;font-size:17px;margin-bottom:8px;}
+    .score-box{margin-top:10px;margin-bottom:15px;}
+    .score-box input{width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-bottom:6px;}
+    .oper-bar{display:flex;gap:10px;margin:10px 0;}
+    .comment-area{border-top:1px solid #eee;padding-top:15px;margin-top:10px;}
+    .comment-item{background:#f8f8f8;padding:10px;border-radius:8px;margin-bottom:6px;display:flex;gap:8px;align-items:flex-start;}
+    .avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+    .text-avatar{font-size:22px;line-height:1;}
+    .comment-meta{font-size:13px;color:#999;margin-bottom:4px;}
+    .comment-content{flex:1;}
+    .comment-input-area{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;}
+    .nick-input{width:120px;padding:8px;border-radius:8px;border:1px solid #eee;}
+    .comment-input{flex:1;padding:8px;border-radius:8px;border:1px solid #eee;min-width:200px;}
+    .randomResult{background:white;padding:20px;border-radius:16px;text-align:center;margin-bottom:25px;font-size:16px;color:#333;}
+    .time-text{color:#aaa;font-size:12px;margin-left:8px;}
+    .upload-area{display:flex;align-items:center;gap:10px;margin-bottom:20px;background:#fff;padding:12px;border-radius:12px;}
+    .preview-avatar{width:45px;height:45px;border-radius:50%;object-fit:cover;border:1px solid #eee;}
+    .del-btn{border:none;background:transparent;color:red;cursor:pointer;font-size:13px;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🧋 饮品清单评分评论系统</h1>
+    <p>随机推荐 | 投稿 | 评分 | 评论</p>
+  </div>
+
+  <div class="btn-bar">
+    <button class="btn blue" onclick="getRandom()">🎲 随机推荐</button>
+    <a class="btn" href="submit.html">➕ 我要投稿</a>
+  </div>
+
+  <div class="randomResult" id="randomResult">点击「随机推荐」帮你选一杯</div>
+
+  <div class="upload-area">
+    <img id="previewAvatar" class="preview-avatar" alt="头像预览">
+    <input type="file" id="avatarUpload" accept="image/*">
+    <span>上传自定义头像</span>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+let allDrinks = [];
+let myNick = localStorage.getItem("nick") || "游客";
+let myAvatar = localStorage.getItem("avatar") || "🧑";
+
+if(myAvatar && myAvatar.startsWith("/public/avatars/")){
+  document.getElementById("previewAvatar").src = myAvatar;
+}
+
+document.getElementById("avatarUpload").addEventListener("change",async e=>{
+  let file = e.target.files[0];
+  if(!file)return;
+  let fd = new FormData();
+  fd.append("avatar",file);
+  let res = await fetch("/api/uploadAvatar",{method:"POST",body:fd});
+  let data = await res.json();
+  if(data.ok){
+    myAvatar = data.url;
+    localStorage.setItem("avatar",myAvatar);
+    document.getElementById("previewAvatar").src = myAvatar;
+    alert("头像上传成功");
+  }
+});
+
+async function load(){
+  let res = await fetch("/api/list");
+  allDrinks = await res.json();
+  render();
+}
+
+function render(){
+  let html = "";
+  allDrinks.forEach((it,idx)=>{
+    let scores = it.scores||[];
+    let avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : 0;
+    let commentHtml = "";
+    let comments = it.comments||[];
+    comments.forEach((c,cIdx)=>{
+      let isMine = c.nick === myNick;
+      let avtDom = "";
+      if(c.avatar && c.avatar.startsWith("/public/avatars/")){
+        avtDom = `<img class="avatar" src="${c.avatar}">`;
+      }else{
+        avtDom = `<span class="text-avatar">${c.avatar||"🧑"}</span>`;
+      }
+      commentHtml += `
+      <div class="comment-item">
+        ${avtDom}
+        <div class="comment-content">
+          <div class="comment-meta">
+            ${c.nick||"匿名用户"}
+            <span class="time-text">${c.time||""}</span>
+            ${isMine?'<button class="del-btn" onclick="delComment('+idx+','+cIdx+')">删除</button>':''}
+          </div>
+          <div>${c.text}</div>
+        </div>
+      </div>
+      `;
+    });
+
+    html += `
+    <div class="card">
+      <h3>${it.brand} · ${it.name}</h3>
+      <div class="info">甜度：${it.sugar} &nbsp;&nbsp; 冰度：${it.ice}</div>
+      <div class="info">小料：${it.topping||"无"}</div>
+      <div class="desc">${it.desc||"暂无描述"}</div>
+      <div class="rating">⭐ 平均分：${avg} (${scores.length}人评分)</div>
+      <div class="score-box">
+        <input placeholder="打分1-5" id="sc_${idx}" type="number" min="1" max="5">
+        <button class="btn blue" style="padding:6px 12px" onclick="addScore(${idx})">提交评分</button>
+      </div>
+      <div class="oper-bar">
+        <button class="btn green" style="padding:6px 12px" onclick="editDrink(${idx})">编辑投稿</button>
+        <button class="btn danger" style="padding:6px 12px" onclick="delDrink(${idx})">删除投稿</button>
+      </div>
+      <div class="comment-area">
+        <div class="comment-list">${commentHtml||'<div class="comment-item"><div class="comment-content">暂无评论</div></div>'}</div>
+        <div class="comment-input-area">
+          <input class="nick-input" placeholder="你的昵称" id="nk_${idx}" value="${myNick}">
+          <input class="comment-input" placeholder="写下评论内容" id="cm_${idx}">
+          <button class="btn green" style="padding:6px 12px" onclick="addComment(${idx})">发表评论</button>
+        </div>
+      </div>
+    </div>
+    `;
+  });
+  document.getElementById("list").innerHTML = html;
+}
+
+async function addScore(idx){
+  let val = document.getElementById(`sc_${idx}`).value;
+  let num = Number(val);
+  if(isNaN(num)||num<1||num>5)return;
+  if(!allDrinks[idx].scores)allDrinks[idx].scores=[];
+  allDrinks[idx].scores.push(num);
+  await saveAll();render();
+}
+
+async function addComment(idx){
+  let text = document.getElementById(`cm_${idx}`).value.trim();
+  let nick = document.getElementById(`nk_${idx}`).value.trim()||"游客";
+  if(!text)return;
+  myNick=nick;localStorage.setItem("nick",nick);
+  if(!allDrinks[idx].comments)allDrinks[idx].comments=[];
+  allDrinks[idx].comments.push({text,nick,avatar:myAvatar,time:new Date().toLocaleString()});
+  await saveAll();render();
+}
+
+async function delComment(d,c){
+  if(!confirm("确定删除该评论？"))return;
+  allDrinks[d].comments.splice(c,1);
+  await saveAll();render();
+}
+
+async function delDrink(idx){
+  if(!confirm("确定删除该投稿？"))return;
+  allDrinks.splice(idx,1);
+  await saveAll();render();
+}
+
+function editDrink(idx){
+  localStorage.setItem("editDrink",JSON.stringify({...allDrinks[idx],idx}));
+  location.href="submit.html";
+}
+
+async function saveAll(){
+  await fetch("/api/saveAll",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(allDrinks)
+  });
+}
+
+async function getRandom(){
+  let res = await fetch("/api/random");
+  let d = await res.json();
+  randomResult.innerHTML = `
+  <strong>🎲 随机推荐饮品</strong><br><br>
+  ${d.brand||""} ${d.name||""}<br>
+  甜度：${d.sugar||""} 冰度：${d.ice||""}<br>
+  小料：${d.topping||"无"}<br>
+  简介：${d.desc||"暂无简介"}
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
