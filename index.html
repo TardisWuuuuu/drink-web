@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>饮品清单</title>
+  <style>
+    :root {
+      --bg-main: #f6f9fa;
+      --card-white: #ffffff;
+      --text-dark: #384047;
+      --text-gray: #6b7280;
+      --line: #e2e8f0;
+      --color-pink: #f8bbd0;
+      --color-blue: #b3e5fc;
+      --color-green: #c8e6c9;
+      --color-orange: #ffe0b2;
+      --color-purple: #e1c5f7;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --shadow: 0 3px 12px rgba(0,0,0,0.06);
+      --easy: all 0.25s ease;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background-color: var(--bg-main);
+      padding: 24px 16px;
+      color: var(--text-dark);
+      line-height: 1.7;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .header h1 {
+      font-size: 26px;
+      background: linear-gradient(120deg,#60a5fa,#f472b6);
+      -webkit-background-clip: text;
+      color: transparent;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .header p {
+      color: var(--text-gray);
+      margin-top: 6px;
+    }
+    .btn-bar {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    .btn {
+      padding: 11px 26px;
+      border-radius: 50px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--easy);
+      color: #333;
+    }
+    .btn.blue {
+      background: var(--color-blue);
+    }
+    .btn.pink {
+      background: var(--color-pink);
+    }
+    .btn.green {
+      background: var(--color-green);
+    }
+    .btn.orange {
+      background: var(--color-orange);
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      opacity: 0.92;
+    }
+    .card {
+      background: var(--card-white);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--color-purple);
+      transition: var(--easy);
+    }
+    .card:hover {
+      border-left-color: var(--color-blue);
+    }
+    .card h3 {
+      font-size: 19px;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .info {
+      font-size: 14px;
+      color: var(--text-gray);
+      margin: 4px 0;
+    }
+    .desc {
+      margin: 12px 0;
+      color: #4a5568;
+    }
+    .rating {
+      color: #f59e0b;
+      font-weight: 500;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: #fefefe;
+      outline: none;
+      transition: var(--easy);
+    }
+    input:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(147,197,253,0.25);
+    }
+    .oper-bar {
+      display: flex;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .comment-area {
+      border-top: 1px dashed var(--line);
+      margin-top: 16px;
+      padding-top: 16px;
+    }
+    .comment-item {
+      background: #f0f7fc;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .text-avatar {
+      font-size: 24px;
+    }
+    .del-btn {
+      border: none;
+      background: transparent;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .comment-input-area {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .randomResult {
+      background: linear-gradient(135deg,#e0f7fa,#fef2f7);
+      padding: 26px;
+      border-radius: var(--radius-md);
+      text-align: center;
+      margin-bottom: 26px;
+    }
+    .upload-area {
+      background: linear-gradient(135deg,#f0fdf4,#f0f7ff);
+      padding: 15px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .preview-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>饮品分享清单</h1>
+    <p>随心投稿 · 轻松评分 · 趣味互动</p>
+  </div>
+
+  <div class="btn-bar">
+    <button class="btn blue" onclick="getRandom()">🎲 随机推荐</button>
+    <a class="btn pink" href="submit.html">➕ 新增投稿</a>
+  </div>
+
+  <div class="randomResult" id="randomResult">点击上方按钮随机抽取心仪饮品</div>
+
+  <div class="upload-area">
+    <img id="previewAvatar" class="preview-avatar" alt="头像">
+    <input type="file" id="avatarUpload" accept="image/*">
+    <span>设置个人专属头像</span>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+let allDrinks = [];
+let myNick = localStorage.getItem("nick") || "游客";
+let myAvatar = localStorage.getItem("avatar") || "🍹";
+
+if(myAvatar && myAvatar.startsWith("/public/avatars/")){
+  document.getElementById("previewAvatar").src = myAvatar;
+}
+
+document.getElementById("avatarUpload").addEventListener("change",async e=>{
+  let file = e.target.files[0];
+  if(!file)return;
+  let fd = new FormData();
+  fd.append("avatar",file);
+  let res = await fetch("/api/uploadAvatar",{method:"POST",body:fd});
+  let data = await res.json();
+  if(data.ok){
+    myAvatar = data.url;
+    localStorage.setItem("avatar",myAvatar);
+    document.getElementById("previewAvatar").src = myAvatar;
+    alert("头像设置成功");
+  }
+});
+
+async function load(){
+  let res = await fetch("/api/list");
+  allDrinks = await res.json();
+  render();
+}
+
+function render(){
+  let html = "";
+  allDrinks.forEach((it,idx)=>{
+    let scores = it.scores||[];
+    let avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : 0;
+    let commentHtml = "";
+    let comments = it.comments||[];
+    comments.forEach((c,cIdx)=>{
+      let isMine = c.nick === myNick;
+      let avtDom = "";
+      if(c.avatar && c.avatar.startsWith("/public/avatars/")){
+        avtDom = `<img class="avatar" src="${c.avatar}">`;
+      }else{
+        avtDom = `<span class="text-avatar">${c.avatar||"🍹"}</span>`;
+      }
+      commentHtml += `
+      <div class="comment-item">
+        ${avtDom}
+        <div class="comment-content">
+          <div>${c.nick} <small style="color:#999">${c.time||""}</small>
+          ${isMine?'<button class="del-btn" onclick="delComment(${idx},${cIdx})">删除</button>':''}</div>
+          <div>${c.text}</div>
+        </div>
+      </div>
+      `;
+    });
+
+    html += `
+    <div class="card">
+      <h3>${it.brand} · ${it.name}</h3>
+      <div class="info">甜度：${it.sugar} &nbsp;&nbsp; 冰度：${it.ice}</div>
+      <div class="info">加料：${it.topping||"无"}</div>
+      <div class="desc">${it.desc||"暂无口味介绍"}</div>
+      <div class="rating">综合评分：${avg} 分</div>
+      <div class="score-box" style="margin:12px 0;">
+        <input placeholder="输入1-5分进行打分" id="sc_${idx}" type="number" min="1" max="5">
+        <button class="btn green" style="margin-top:8px;font-size:13px;padding:6px 16px" onclick="addScore(${idx})">提交评分</button>
+      </div>
+      <div class="oper-bar">
+        <button class="btn orange" style="font-size:13px;padding:6px 16px" onclick="editDrink(${idx})">编辑</button>
+        <button class="btn pink" style="font-size:13px;padding:6px 16px" onclick="delDrink(${idx})">删除</button>
+      </div>
+      <div class="comment-area">
+        ${commentHtml||'<div style="color:#aaa;text-align:center;padding:8px;">暂无评论</div>'}
+        <div class="comment-input-area">
+          <input class="nick-input" style="width:120px" placeholder="昵称" id="nk_${idx}" value="${myNick}">
+          <input class="comment-input" style="flex:1" placeholder="写下你的评价" id="cm_${idx}">
+          <button class="btn blue" style="font-size:13px;padding:6px 16px" onclick="addComment(${idx})">发送</button>
+        </div>
+      </div>
+    </div>
+    `;
+  });
+  document.getElementById("list").innerHTML = html;
+}
+
+async function addScore(idx){
+  let val = document.getElementById(`sc_${idx}`).value;
+  let num = Number(val);
+  if(isNaN(num)||num<1||num>5)return;
+  if(!allDrinks[idx].scores)allDrinks[idx].scores=[];
+  allDrinks[idx].scores.push(num);
+  await saveAll();render();
+}
+
+async function addComment(idx){
+  let text = document.getElementById(`cm_${idx}`).value.trim();
+  let nick = document.getElementById(`nk_${idx}`).value.trim()||"游客";
+  if(!text)return;
+  myNick=nick;localStorage.setItem("nick",nick);
+  if(!allDrinks[idx].comments)allDrinks[idx].comments=[];
+  allDrinks[idx].comments.push({text,nick,avatar:myAvatar,time:new Date().toLocaleString()});
+  await saveAll();render();
+}
+
+async function delComment(d,c){
+  if(!confirm("确定删除评论？"))return;
+  allDrinks[d].comments.splice(c,1);
+  await saveAll();render();
+}
+
+async function delDrink(idx){
+  if(!confirm("确定删除这条投稿？"))return;
+  allDrinks.splice(idx,1);
+  await saveAll();render();
+}
+
+function editDrink(idx){
+  localStorage.setItem("editDrink",JSON.stringify({...allDrinks[idx],idx}));
+  location.href="submit.html";
+}
+
+async function saveAll(){
+  await fetch("/api/saveAll",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(allDrinks)
+  });
+}
+
+async function getRandom(){
+  let res = await fetch("/api/random");
+  let d = await res.json();
+  randomResult.innerHTML = `
+  💖 今日幸运饮品<br><br>
+  ${d.brand||""} ${d.name||""}<br>
+  甜度：${d.sugar||""}｜冰度：${d.ice||""}<br>
+  特色：${d.topping||"无额外加料"}<br>
+  口感：${d.desc||"温柔清甜，日常百搭"}
+  `;
+}
+
+load();
+</script>
+</body>
+</html>
