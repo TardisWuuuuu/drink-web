@@ -2,7 +2,7 @@
   "name": "drink-web",
   "version": "1.0.0",
   "main": "backend/server.js",
-  "scripts": {
+"scripts": {
   "start":"node server.js"
   },
   "dependencies": {
