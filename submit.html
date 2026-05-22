@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>饮品投稿</title>
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        body{
+            background-color: #f5f0eb;
+            font-family: "Microsoft Yahei",sans-serif;
+        }
+        .box{
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        h2{
+            text-align: center;
+            color: #6b4f4f;
+            margin-bottom: 25px;
+        }
+        .item{
+            margin-bottom: 20px;
+        }
+        label{
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        input,textarea{
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn-group{
+            display: flex;
+            gap:15px;
+            margin-top: 25px;
+        }
+        .btn{
+            flex:1;
+            height: 42px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .submit{
+            background: #c9a88c;
+            color: #fff;
+        }
+        .back{
+            background: #eee;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>饮品信息投稿</h2>
+        <div class="item">
+            <label>饮品名称</label>
+            <input type="text" placeholder="请输入饮品名字">
+        </div>
+        <div class="item">
+            <label>口味介绍</label>
+            <textarea rows="4" placeholder="简单描述口感风味"></textarea>
+        </div>
+        <div class="btn-group">
+            <button class="submit">提交</button>
+            <button class="back" onclick="history.back()">返回首页</button>
+        </div>
+    </div>
+</body>
+</html>
