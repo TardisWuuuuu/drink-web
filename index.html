@@ -1,49 +1,317 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>饮品分享站</title>
-    <style>
-        *{margin: 0;padding: 0;box-sizing: border-box;}
-        body{
-            background-color: #f5f0eb;
-            font-family: "Microsoft Yahei",sans-serif;
-        }
-        .container{
-            width: 90%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        h1{
-            text-align: center;
-            color: #6b4f4f;
-            margin-bottom: 30px;
-        }
-        .nav-btn{
-            display: block;
-            width: 180px;
-            height: 45px;
-            line-height: 45px;
-            text-align: center;
-            background: #c9a88c;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 0 auto;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        .nav-btn:hover{
-            background: #b08c6d;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>饮品分享清单</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --blue: #74c0fc;
+      --blue-dark: #4dabf7;
+      --pink: #f0a8d0;
+      --green: #94d8a0;
+      --orange: #ffc078;
+      --gray: #868e96;
+      --radius: 16px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: #2d3748;
+      line-height: 1.7;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: var(--blue-dark);
+      margin-bottom: 6px;
+    }
+    .header p {
+      color: var(--gray);
+      font-size: 15px;
+    }
+    .btn-bar {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 28px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #fff;
+    }
+    .btn-blue { background: var(--blue); }
+    .btn-pink { background: var(--pink); }
+    .btn-green { background: var(--green); }
+    .btn-orange { background: var(--orange); }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      opacity: 0.92;
+    }
+    .randomResult {
+      background: linear-gradient(135deg, #e8f4ff, #fff5fa);
+      padding: 28px;
+      border-radius: var(--radius);
+      text-align: center;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--blue);
+    }
+    .card h3 {
+      font-size: 19px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    .info {
+      font-size: 14px;
+      color: var(--gray);
+      margin: 4px 0;
+    }
+    .desc {
+      margin: 10px 0;
+      color: #495057;
+    }
+    .rating {
+      color: #ffb400;
+      font-weight: 500;
+      margin: 8px 0;
+    }
+    .score-box {
+      margin: 12px 0;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      outline: none;
+      margin: 6px 0;
+      font-size: 14px;
+    }
+    .comment-area {
+      border-top: 1px dashed #e2e8f0;
+      margin-top: 16px;
+      padding-top: 16px;
+    }
+    .comment-item {
+      background: #f1f7ff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      gap:8px;
+      align-items:center;
+    }
+    .emoji-avatar{
+      font-size:24px;
+    }
+    .comment-input-area {
+      margin-top: 12px;
+    }
+    .oper-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .avatar-select{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:10px 0;
+    }
+    .emoji-item{
+      font-size:28px;
+      cursor:pointer;
+      padding:4px;
+      border-radius:6px;
+    }
+    .emoji-item.active{
+      background:#e8f4ff;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>美味饮品分享平台</h1>
-        <a href="submit.html" class="nav-btn">提交你的饮品</a>
+<div class="container">
+  <div class="header">
+    <h1>🍹 饮品分享清单</h1>
+    <p>随心投稿 · 轻松评分 · 趣味互动</p>
+  </div>
+
+  <div class="btn-bar">
+    <button class="btn btn-blue" onclick="getRandom()">🎲 随机推荐</button>
+    <button class="btn btn-pink" onclick="location.href='submit.html'">➕ 新增投稿</button>
+  </div>
+
+  <div class="randomResult" id="randomResult">点击上方按钮随机抽取心仪饮品</div>
+
+  <div>
+    <p>选择个人头像表情：</p>
+    <div class="avatar-select" id="avatarSel">
+      <span class="emoji-item" onclick="chooseEmoji('😺')">😺</span>
+      <span class="emoji-item" onclick="chooseEmoji('🐰')">🐰</span>
+      <span class="emoji-item" onclick="chooseEmoji('🐻')">🐻</span>
+      <span class="emoji-item" onclick="chooseEmoji('🍧')">🍧</span>
+      <span class="emoji-item" onclick="chooseEmoji('🍹')">🍹</span>
+      <span class="emoji-item" onclick="chooseEmoji('🌸')">🌸</span>
     </div>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+let allDrinks = JSON.parse(localStorage.getItem("allDrinks")) || [];
+let myNick = localStorage.getItem("nick") || "游客";
+let myEmoji = localStorage.getItem("userEmoji") || "🍹";
+
+// 标记选中头像
+document.querySelectorAll('.emoji-item').forEach(item=>{
+  if(item.innerText === myEmoji) item.classList.add('active');
+})
+
+function chooseEmoji(emo){
+  myEmoji = emo;
+  localStorage.setItem("userEmoji",emo);
+  document.querySelectorAll('.emoji-item').forEach(i=>i.classList.remove('active'));
+  event.target.classList.add('active');
+  alert("头像设置成功");
+}
+
+function render() {
+  let html = "";
+  allDrinks.forEach((it, idx) => {
+    let scores = it.scores || [];
+    let avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : 0;
+    let commentHtml = "";
+    let comments = it.comments || [];
+    comments.forEach((c, cIdx) => {
+      commentHtml += `
+      <div class="comment-item">
+        <span class="emoji-avatar">${c.emo||"🍹"}</span>
+        <div>
+          <div>${c.nick}</div>
+          <div>${c.text}</div>
+        </div>
+      </div>
+      `;
+    });
+
+    html += `
+    <div class="card">
+      <h3>${it.brand} · ${it.name}</h3>
+      <div class="info">甜度：${it.sugar} &nbsp;&nbsp; 冰度：${it.ice}</div>
+      <div class="info">加料：${it.topping || "无"}</div>
+      <div class="desc">${it.desc || "暂无介绍"}</div>
+      <div class="rating">综合评分：${avg} 分</div>
+
+      <div class="score-box">
+        <input placeholder="输入1-5分打分" id="sc_${idx}" type="number" min="1" max="5">
+        <button class="btn btn-green" style="padding:6px 16px;font-size:13px" onclick="addScore(${idx})">提交评分</button>
+      </div>
+
+      <div class="oper-bar">
+        <button class="btn btn-orange" style="padding:6px 16px;font-size:13px" onclick="editDrink(${idx})">编辑</button>
+        <button class="btn btn-pink" style="padding:6px 16px;font-size:13px" onclick="delDrink(${idx})">删除</button>
+      </div>
+
+      <div class="comment-area">
+        ${commentHtml || '<div style="color:#aaa;text-align:center">暂无评论</div>'}
+        <div class="comment-input-area">
+          <input placeholder="昵称" id="nk_${idx}" value="${myNick}">
+          <input placeholder="写下你的评论" id="cm_${idx}">
+          <button class="btn btn-blue" style="padding:6px 16px;font-size:13px" onclick="addComment(${idx})">发送</button>
+        </div>
+      </div>
+    </div>
+    `;
+  });
+  document.getElementById("list").innerHTML = html;
+}
+
+function addScore(idx) {
+  let val = document.getElementById(`sc_${idx}`).value;
+  let num = Number(val);
+  if (isNaN(num) || num < 1 || num > 5) return;
+  if (!allDrinks[idx].scores) allDrinks[idx].scores = [];
+  allDrinks[idx].scores.push(num);
+  saveAll();
+  render();
+}
+
+function addComment(idx) {
+  let text = document.getElementById(`cm_${idx}`).value.trim();
+  let nick = document.getElementById(`nk_${idx}`).value.trim() || "游客";
+  if (!text) return;
+  myNick = nick;
+  localStorage.setItem("nick", nick);
+  if (!allDrinks[idx].comments) allDrinks[idx].comments = [];
+  allDrinks[idx].comments.push({ text, nick, emo:myEmoji });
+  saveAll();
+  render();
+}
+
+function delDrink(idx) {
+  if (!confirm("确定删除？")) return;
+  allDrinks.splice(idx, 1);
+  saveAll();
+  render();
+}
+
+function editDrink(idx) {
+  localStorage.setItem("editDrink", JSON.stringify({ ...allDrinks[idx], idx }));
+  location.href = "submit.html";
+}
+
+function saveAll() {
+  localStorage.setItem("allDrinks", JSON.stringify(allDrinks));
+}
+
+function getRandom() {
+  if (allDrinks.length === 0) {
+    randomResult.innerHTML = "暂无饮品，快去投稿吧～";
+    return;
+  }
+  let d = allDrinks[Math.floor(Math.random() * allDrinks.length)];
+  randomResult.innerHTML = `
+  🍹 今日推荐<br><br>
+  ${d.brand} ${d.name}<br>
+  甜度：${d.sugar}｜冰度：${d.ice}<br>
+  加料：${d.topping || "无"}<br>
+  评价：${d.desc || "超好喝！"}
+  `;
+}
+
+render();
+</script>
 </body>
 </html>
