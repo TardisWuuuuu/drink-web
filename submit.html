@@ -115,12 +115,13 @@
 </div>
 
 <script>
-let editInfo = null;
+let editIdx = null;
 
 async function loadEdit(){
   const edit = localStorage.getItem("editDrink");
   if (edit) {
-    editInfo = JSON.parse(edit);
+    let editInfo = JSON.parse(edit);
+    editIdx = editInfo.idx;
     document.getElementById("brand").value = editInfo.brand;
     document.getElementById("name").value = editInfo.name;
     document.getElementById("sugar").value = editInfo.sugar;
@@ -152,8 +153,8 @@ async function save() {
   let data = await getAllData();
   let list = data.list || [];
 
-  if (editInfo) {
-    list[editInfo.idx] = obj;
+  if (editIdx !== null) {
+    list[editIdx] = obj;
     localStorage.removeItem("editDrink");
   } else {
     list.push(obj);
