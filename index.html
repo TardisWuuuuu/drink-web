@@ -1,188 +1,135 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>饮品分享</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,'PingFang SC',sans-serif}
-    body{background:#f6f9ff;color:#333;padding:20px}
-    .container{max-width:700px;margin:0 auto}
-    .title{text-align:center;color:#42a5f5;margin:20px 0}
-    .tip{text-align:center;color:#666;margin-bottom:20px}
-    .btn-bar{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-    .btn{padding:10px 16px;border-radius:20px;border:none;background:#42a5f5;color:white;cursor:pointer}
-    .btn-pink{background:#f48fb1}
-    .btn-green{background:#81c784}
-    .btn-orange{background:#ffb74d}
-    .btn:hover{opacity:.9}
-    .random{background:white;padding:20px;border-radius:16px;text-align:center;margin-bottom:20px;box-shadow:0 2px 10px #0001}
-    .emoji-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
-    .emoji{font-size:24px;cursor:pointer;padding:4px;border-radius:8px}
-    .emoji.active{background:#e3f2fd}
-    .card{background:white;padding:20px;border-radius:16px;margin-bottom:16px;box-shadow:0 2px 10px #0001}
-    .card h3{margin-bottom:8px}
-    .info{color:#666;margin:4px 0}
-    .rating{color:#ffb300;margin:8px 0}
-    .comment{background:#f1f8ff;padding:10px;border-radius:10px;margin:6px 0;display:flex;align-items:center;gap:8px}
-    .comment .emo{font-size:20px}
-    .comment-name{font-weight:bold}
-    .input-bar{margin-top:10px}
-    input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #ddd;margin:6px 0}
-    .oper{display:flex;gap:8px;margin-top:10px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>饮品共享</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#f0f7ff;padding:20px}
+.box{max-width:700px;margin:0 auto}
+h1{text-align:center;color:#2196F3;margin:20px 0}
+.btn{padding:10px 20px;border:none;border-radius:25px;background:#2196F3;color:#fff;cursor:pointer;margin:5px;transition:0.2s}
+.btn:hover{opacity:0.85}
+.btn-wrap{text-align:center;margin-bottom:20px}
+.random-card{background:#fff;padding:20px;border-radius:15px;text-align:center;margin-bottom:20px;box-shadow:0 2px 8px #0002}
+.emo-select{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:15px 0}
+.emo{font-size:26px;padding:4px;border-radius:6px;cursor:pointer}
+.emo.active{background:#e0edff}
+.item-card{background:#fff;padding:18px;border-radius:15px;margin:15px 0;box-shadow:0 2px 8px #0002}
+.info{color:#555;margin:6px 0;font-size:14px}
+.score{color:#ff9800;margin:8px 0}
+input,textarea{width:100%;padding:9px;margin:6px 0;border:1px #ddd solid;border-radius:8px}
+.comment-item{display:flex;align-items:center;gap:8px;background:#f5f9ff;padding:8px;border-radius:8px;margin:5px 0}
+</style>
 </head>
 <body>
-<div class="container">
-  <h1 class="title">🍹 饮品分享墙</h1>
-  <p class="tip">手机电脑都能看见，实时同步</p>
+<div class="box">
+<h1>饮品共享榜单</h1>
+<div class="btn-wrap">
+<button class="btn" onclick="randDrink()">随机抽取</button>
+<button class="btn" onclick="location.href='submit.html'">发布投稿</button>
+</div>
+<div class="random-card" id="randShow">点击按钮随机推荐饮品</div>
 
-  <div class="btn-bar">
-    <button class="btn" onclick="getRandom()">随机推荐</button>
-    <button class="btn btn-pink" onclick="location.href='submit.html'">我要投稿</button>
-  </div>
+<div>
+<p style="text-align:center">选择头像表情</p>
+<div class="emo-select" id="emoBox">
+<span class="emo" onclick="setAvatar('😸')">😸</span>
+<span class="emo" onclick="setAvatar('🐰')">🐰</span>
+<span class="emo" onclick="setAvatar('🍹')">🍹</span>
+<span class="emo" onclick="setAvatar('🌸')">🌸</span>
+</div>
+</div>
 
-  <div class="random" id="randomBox">点击随机获取饮品</div>
-
-  <div style="margin-bottom:20px">
-    <p style="text-align:center">选择你的头像：</p>
-    <div class="emoji-row" id="emoList">
-      <span class="emoji" onclick="setEmoji('😺')">😺</span>
-      <span class="emoji" onclick="setEmoji('🐰')">🐰</span>
-      <span class="emoji" onclick="setEmoji('🍹')">🍹</span>
-      <span class="emoji" onclick="setEmoji('🌸')">🌸</span>
-      <span class="emoji" onclick="setEmoji('🐻')">🐻</span>
-      <span class="emoji" onclick="setEmoji('✨')">✨</span>
-    </div>
-  </div>
-
-  <div id="list"></div>
+<div id="listBox"></div>
 </div>
 
 <script>
-let list = []
-let myEmoji = localStorage.getItem('emo') || '🍹'
-let myName = localStorage.getItem('name') || '游客'
+let drinkList = [];
+let myAvatar = localStorage.getItem('avt')||'🍹';
 
-async function load(){
-  let r = await fetch('/api/get')
-  let d = await r.json()
-  list = d.list || []
-  render()
+function setAvatar(emo){
+  myAvatar=emo;localStorage.setItem('avt',emo);
+  document.querySelectorAll('.emo').forEach(e=>e.classList.remove('active'));
+  event.target.classList.add('active');
 }
 
-function setEmoji(e){
-  myEmoji = e
-  localStorage.setItem('emo',e)
-  document.querySelectorAll('.emoji').forEach(i=>i.classList.remove('active'))
-  event.target.classList.add('active')
+async function getData(){
+  let res=await fetch('/getList');
+  drinkList=await res.json();
+  renderPage();
 }
 
-function render(){
-  let html = ''
-  list.forEach((it,idx)=>{
-    let avg = it.scores?.length ? (it.scores.reduce((a,b)=>a+b,0)/it.scores.length).toFixed(1) : 0
-    let cmHtml = ''
-    it.comments?.forEach(c=>{
-      cmHtml+=`
-      <div class="comment">
-        <span class="emo">${c.emo||'🍹'}</span>
-        <div>
-          <div class="comment-name">${c.nick}</div>
-          <div>${c.text}</div>
-        </div>
-      </div>
-      `
+async function saveData(){
+  await fetch('/saveList',{method:'POST',body:JSON.stringify(drinkList)});
+}
+
+function renderPage(){
+  let html='';
+  drinkList.forEach((item,idx)=>{
+    let avg=item.scores?.length?(item.scores.reduce((a,b)=>a+b,0)/item.scores.length).toFixed(1):0;
+    let comHtml='';
+    item.comments?.forEach(c=>{
+      comHtml+=`<div class="comment-item"><span style="font-size:22px">${c.avt}</span><div><div>${c.name}</div><div>${c.text}</div></div></div>`;
     })
-
     html+=`
-    <div class="card">
-      <h3>${it.brand}｜${it.name}</h3>
-      <div class="info">甜度：${it.sugar}｜冰度：${it.ice}</div>
-      <div class="info">加料：${it.topping||'无'}</div>
-      <div class="info">简介：${it.desc}</div>
-      <div class="rating">⭐ 评分：${avg}</div>
-
-      <div class="input-bar">
-        <input type="number" min="1" max="5" placeholder="打分1-5" id="sc${idx}">
-        <button class="btn btn-green" onclick="addScore(${idx})">提交评分</button>
-      </div>
-
-      <div class="oper">
-        <button class="btn btn-orange" onclick="edit(${idx})">编辑</button>
-        <button class="btn btn-pink" onclick="del(${idx})">删除</button>
-      </div>
-
-      <div style="margin-top:12px">
-        ${cmHtml || '<div style="color:#999;text-align:center">暂无评论</div>'}
-        <input placeholder="昵称" value="${myName}" id="nk${idx}">
-        <input placeholder="说点什么..." id="cm${idx}">
-        <button class="btn" onclick="addComment(${idx})">发送评论</button>
-      </div>
-    </div>
-    `
+    <div class="item-card">
+      <h3>${item.brand} ${item.name}</h3>
+      <div class="info">甜度：${item.sugar} | 冰度：${item.ice}</div>
+      <div class="info">加料：${item.top||'无'}</div>
+      <div class="info">简介：${item.desc}</div>
+      <div class="score">综合评分：${avg}</div>
+      <input placeholder="1-5分打分" id="sc${idx}" type="number" min="1" max="5">
+      <button class="btn" onclick="addScore(${idx})">提交分数</button>
+      <div style="margin:8px 0">${comHtml||'<div style="color:#999">暂无评论</div>'}</div>
+      <input placeholder="昵称" id="nm${idx}" value="${localStorage.getItem('usr')||''}">
+      <textarea placeholder="写下评论" id="ct${idx}"></textarea>
+      <button class="btn" onclick="addComment(${idx})">发送评论</button>
+      <button class="btn" style="background:#f44336" onclick="delItem(${idx})">删除</button>
+      <button class="btn" style="background:#4CAF50" onclick="editItem(${idx})">编辑</button>
+    </div>`;
   })
-  document.getElementById('list').innerHTML = html
+  document.getElementById('listBox').innerHTML=html;
+  document.querySelectorAll('.emo').forEach(e=>{if(e.innerText===myAvatar)e.classList.add('active')});
 }
 
 async function addScore(idx){
-  let v = document.getElementById('sc'+idx).value-0
-  if(!v||v<1||v>5)return
-  if(!list[idx].scores)list[idx].scores=[]
-  list[idx].scores.push(v)
-  await save()
-  load()
+  let num=Number(document.getElementById(`sc${idx}`).value);
+  if(!num||num<1||num>5)return;
+  if(!drinkList[idx].scores)drinkList[idx].scores=[];
+  drinkList[idx].scores.push(num);
+  await saveData();getData();
 }
 
 async function addComment(idx){
-  let nk = document.getElementById('nk'+idx).value.trim()
-  let tx = document.getElementById('cm'+idx).value.trim()
-  if(!tx)return
-  myName = nk
-  localStorage.setItem('name',nk)
-  if(!list[idx].comments)list[idx].comments=[]
-  list[idx].comments.push({nick:nk,text:tx,emo:myEmoji})
-  await save()
-  load()
+  let name=document.getElementById(`nm${idx}`).value.trim()||"访客";
+  let text=document.getElementById(`ct${idx}`).value.trim();
+  if(!text)return;
+  localStorage.setItem('usr',name);
+  if(!drinkList[idx].comments)drinkList[idx].comments=[];
+  drinkList[idx].comments.push({name,text,avt:myAvatar});
+  await saveData();getData();
 }
 
-async function del(idx){
-  if(!confirm('确定删除？'))return
-  list.splice(idx,1)
-  await save()
-  load()
+async function delItem(idx){
+  if(!confirm('确认删除'))return;
+  drinkList.splice(idx,1);
+  await saveData();getData();
 }
 
-function edit(idx){
-  localStorage.setItem('edit',JSON.stringify({...list[idx],idx}))
-  location.href='submit.html'
+function editItem(idx){
+  localStorage.setItem('editInfo',JSON.stringify({...drinkList[idx],idx}));
+  location.href='submit.html';
 }
 
-async function save(){
-  await fetch('/api/save',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({list})
-  })
+function randDrink(){
+  if(drinkList.length===0){randShow.innerText='暂无饮品数据';return}
+  let d=drinkList[Math.floor(Math.random()*drinkList.length)];
+  randShow.innerHTML=`推荐：${d.brand}${d.name}<br>甜度${d.sugar} 冰度${d.ice}`;
 }
 
-function getRandom(){
-  if(list.length===0){randomBox.innerHTML='暂无投稿';return}
-  let d = list[Math.floor(Math.random()*list.length)]
-  randomBox.innerHTML = `
-  随机推荐：<br>
-  ${d.brand} ${d.name}<br>
-  甜度：${d.sugar}｜冰度：${d.ice}<br>
-  简介：${d.desc}
-  `
-}
-
-window.onload = ()=>{
-  load()
-  document.querySelectorAll('.emoji').forEach(e=>{
-    if(e.innerText===myEmoji)e.classList.add('active')
-  })
-}
+window.onload=getData;
 </script>
 </body>
 </html>

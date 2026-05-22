@@ -1,46 +1,25 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 const app = express();
 
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.static(__dirname));
+app.use(express.json());
+app.use(express.static('./'));
 
-const dataFile = path.join(__dirname, 'data.json');
+const dbPath = path.join(__dirname, 'db.json');
+if (!fs.existsSync(dbPath)) fs.writeFileSync(dbPath, JSON.stringify([]));
 
-// 自动创建 data.json
-if (!fs.existsSync(dataFile)) {
-  fs.writeFileSync(dataFile, JSON.stringify({ list: [] }, null, 2));
-}
-
-// 获取数据
-app.get('/api/get', (req, res) => {
-  try {
-    const data = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
-    res.json(data);
-  } catch (e) {
-    res.json({ list: [] });
-  }
+app.get('/getList', (req, res) => {
+  res.json(JSON.parse(fs.readFileSync(dbPath)));
 });
 
-// 保存数据
-app.post('/api/save', (req, res) => {
-  try {
-    fs.writeFileSync(dataFile, JSON.stringify(req.body, null, 2));
-    res.json({ ok: true });
-  } catch (e) {
-    res.json({ ok: false });
-  }
+app.post('/saveList', (req, res) => {
+  fs.writeFileSync(dbPath, JSON.stringify(req.body, null, 2));
+  res.send('ok');
 });
 
-// 首页
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/submit.html', (req, res) => res.sendFile(path.join(__dirname, 'submit.html')));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('服务已启动');
-});
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log('Running'));
