@@ -190,11 +190,10 @@
 </div>
 
 <script>
-let allDrinks = JSON.parse(localStorage.getItem("allDrinks")) || [];
+let allDrinks = [];
 let myNick = localStorage.getItem("nick") || "游客";
 let myEmoji = localStorage.getItem("userEmoji") || "🍹";
 
-// 标记选中头像
 document.querySelectorAll('.emoji-item').forEach(item=>{
   if(item.innerText === myEmoji) item.classList.add('active');
 })
@@ -207,6 +206,21 @@ function chooseEmoji(emo){
   alert("头像设置成功");
 }
 
+async function loadData(){
+  const res = await fetch('/api/getData');
+  const data = await res.json();
+  allDrinks = data.list || [];
+  render();
+}
+
+async function saveData(){
+  await fetch('/api/saveData',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({list:allDrinks})
+  });
+}
+
 function render() {
   let html = "";
   allDrinks.forEach((it, idx) => {
@@ -214,7 +228,7 @@ function render() {
     let avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : 0;
     let commentHtml = "";
     let comments = it.comments || [];
-    comments.forEach((c, cIdx) => {
+    comments.forEach((c) => {
       commentHtml += `
       <div class="comment-item">
         <span class="emoji-avatar">${c.emo||"🍹"}</span>
@@ -258,17 +272,17 @@ function render() {
   document.getElementById("list").innerHTML = html;
 }
 
-function addScore(idx) {
+async function addScore(idx) {
   let val = document.getElementById(`sc_${idx}`).value;
   let num = Number(val);
   if (isNaN(num) || num < 1 || num > 5) return;
   if (!allDrinks[idx].scores) allDrinks[idx].scores = [];
   allDrinks[idx].scores.push(num);
-  saveAll();
+  await saveData();
   render();
 }
 
-function addComment(idx) {
+async function addComment(idx) {
   let text = document.getElementById(`cm_${idx}`).value.trim();
   let nick = document.getElementById(`nk_${idx}`).value.trim() || "游客";
   if (!text) return;
@@ -276,24 +290,20 @@ function addComment(idx) {
   localStorage.setItem("nick", nick);
   if (!allDrinks[idx].comments) allDrinks[idx].comments = [];
   allDrinks[idx].comments.push({ text, nick, emo:myEmoji });
-  saveAll();
+  await saveData();
   render();
 }
 
-function delDrink(idx) {
+async function delDrink(idx) {
   if (!confirm("确定删除？")) return;
   allDrinks.splice(idx, 1);
-  saveAll();
+  await saveData();
   render();
 }
 
 function editDrink(idx) {
   localStorage.setItem("editDrink", JSON.stringify({ ...allDrinks[idx], idx }));
   location.href = "submit.html";
-}
-
-function saveAll() {
-  localStorage.setItem("allDrinks", JSON.stringify(allDrinks));
 }
 
 function getRandom() {
@@ -311,7 +321,7 @@ function getRandom() {
   `;
 }
 
-render();
+window.onload = loadData;
 </script>
 </body>
 </html>

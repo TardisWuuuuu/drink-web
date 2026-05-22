@@ -115,18 +115,27 @@
 </div>
 
 <script>
-let edit = localStorage.getItem("editDrink");
-if (edit) {
-  let data = JSON.parse(edit);
-  document.getElementById("brand").value = data.brand;
-  document.getElementById("name").value = data.name;
-  document.getElementById("sugar").value = data.sugar;
-  document.getElementById("ice").value = data.ice;
-  document.getElementById("topping").value = data.topping;
-  document.getElementById("desc").value = data.desc;
+let editInfo = null;
+
+async function loadEdit(){
+  const edit = localStorage.getItem("editDrink");
+  if (edit) {
+    editInfo = JSON.parse(edit);
+    document.getElementById("brand").value = editInfo.brand;
+    document.getElementById("name").value = editInfo.name;
+    document.getElementById("sugar").value = editInfo.sugar;
+    document.getElementById("ice").value = editInfo.ice;
+    document.getElementById("topping").value = editInfo.topping;
+    document.getElementById("desc").value = editInfo.desc;
+  }
 }
 
-function save() {
+async function getAllData(){
+  const res = await fetch('/api/getData');
+  return await res.json();
+}
+
+async function save() {
   let brand = document.getElementById("brand").value.trim();
   let name = document.getElementById("name").value.trim();
   let sugar = document.getElementById("sugar").value;
@@ -140,20 +149,27 @@ function save() {
   }
 
   let obj = { brand, name, sugar, ice, topping, desc, scores: [], comments: [] };
-  let list = JSON.parse(localStorage.getItem("allDrinks")) || [];
+  let data = await getAllData();
+  let list = data.list || [];
 
-  if (edit) {
-    let idx = JSON.parse(edit).idx;
-    list[idx] = obj;
+  if (editInfo) {
+    list[editInfo.idx] = obj;
     localStorage.removeItem("editDrink");
   } else {
     list.push(obj);
   }
 
-  localStorage.setItem("allDrinks", JSON.stringify(list));
+  await fetch('/api/saveData',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({list})
+  });
+
   alert("投稿成功！");
   location.href = "index.html";
 }
+
+window.onload = loadEdit;
 </script>
 </body>
 </html>
