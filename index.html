@@ -6,16 +6,17 @@
   <title>饮品分享清单</title>
   <style>
     :root {
-      --bg: #f7f9fc;
+      --bg: #fff5f8;
       --card: #ffffff;
-      --blue: #74c0fc;
-      --blue-dark: #4dabf7;
-      --pink: #f0a8d0;
-      --green: #94d8a0;
-      --orange: #ffc078;
-      --gray: #868e96;
+      --mac-blue: #b5d8f6;
+      --mac-pink: #f8c8e0;
+      --mac-green: #b8e8d0;
+      --mac-yellow: #ffe8b5;
+      --mac-purple: #e2d5f8;
+      --text-dark: #443f48;
+      --text-gray: #948c99;
       --radius: 16px;
-      --shadow: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow: 0 4px 12px rgba(180,160,190,0.15);
     }
     * {
       margin: 0;
@@ -25,7 +26,7 @@
     }
     body {
       background: var(--bg);
-      color: #2d3748;
+      color: var(--text-dark);
       line-height: 1.7;
     }
     .container {
@@ -39,11 +40,11 @@
     }
     .header h1 {
       font-size: 28px;
-      color: var(--blue-dark);
+      color: #d885a3;
       margin-bottom: 6px;
     }
     .header p {
-      color: var(--gray);
+      color: var(--text-gray);
       font-size: 15px;
     }
     .btn-bar {
@@ -62,17 +63,17 @@
       transition: all 0.25s ease;
       color: #fff;
     }
-    .btn-blue { background: var(--blue); }
-    .btn-pink { background: var(--pink); }
-    .btn-green { background: var(--green); }
-    .btn-orange { background: var(--orange); }
+    .btn-blue { background: var(--mac-blue); color:#335475; }
+    .btn-pink { background: var(--mac-pink); color:#704258; }
+    .btn-green { background: var(--mac-green); color:#325c48; }
+    .btn-orange { background: var(--mac-yellow); color:#725a30; }
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      opacity: 0.92;
+      box-shadow: 0 4px 10px rgba(180,160,190,0.2);
+      opacity: 0.9;
     }
     .randomResult {
-      background: linear-gradient(135deg, #e8f4ff, #fff5fa);
+      background: linear-gradient(135deg, #f0e8f8, #ffeef2);
       padding: 28px;
       border-radius: var(--radius);
       text-align: center;
@@ -85,24 +86,24 @@
       padding: 24px;
       margin-bottom: 18px;
       box-shadow: var(--shadow);
-      border-left: 5px solid var(--blue);
+      border-left: 5px solid var(--mac-pink);
     }
     .card h3 {
       font-size: 19px;
       margin-bottom: 8px;
-      color: #333;
+      color: #6b4b5b;
     }
     .info {
       font-size: 14px;
-      color: var(--gray);
+      color: var(--text-gray);
       margin: 4px 0;
     }
     .desc {
       margin: 10px 0;
-      color: #495057;
+      color: var(--text-dark);
     }
     .rating {
-      color: #ffb400;
+      color: #f2a661;
       font-weight: 500;
       margin: 8px 0;
     }
@@ -113,18 +114,19 @@
       width: 100%;
       padding: 10px;
       border-radius: 10px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #f0e4ec;
       outline: none;
       margin: 6px 0;
       font-size: 14px;
+      background:#fffbfd;
     }
     .comment-area {
-      border-top: 1px dashed #e2e8f0;
+      border-top: 1px dashed #f0dfe8;
       margin-top: 16px;
       padding-top: 16px;
     }
     .comment-item {
-      background: #f1f7ff;
+      background: #fef2f7;
       padding: 10px 12px;
       border-radius: 10px;
       margin-bottom: 8px;
@@ -156,7 +158,7 @@
       border-radius:6px;
     }
     .emoji-item.active{
-      background:#e8f4ff;
+      background:#f8e0ec;
     }
   </style>
 </head>

@@ -6,10 +6,12 @@
   <title>投稿饮品</title>
   <style>
     :root {
-      --bg: #f7f9fc;
-      --card: #fff;
-      --blue: #74c0fc;
+      --bg: #fff5f8;
+      --card: #ffffff;
+      --mac-pink: #f8c8e0;
+      --text-main: #6b4b5b;
       --radius: 16px;
+      --shadow: 0 4px 12px rgba(180,160,190,0.15);
     }
     * {
       margin: 0;
@@ -27,11 +29,11 @@
       margin: 0 auto;
       padding: 32px;
       border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow);
     }
     h2 {
       text-align: center;
-      color: #4dabf7;
+      color: #d885a3;
       margin-bottom: 28px;
     }
     .item {
@@ -40,33 +42,34 @@
     label {
       display: block;
       margin-bottom: 8px;
-      color: #555;
+      color: #77606c;
     }
     input, select, textarea {
       width: 100%;
       padding: 11px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #f0e4ec;
       border-radius: 10px;
       outline: none;
+      background:#fffbfd;
     }
     .btn {
       width: 100%;
       padding: 12px;
       border: none;
       border-radius: 10px;
-      background: var(--blue);
-      color: #fff;
+      background: var(--mac-pink);
+      color: #704258;
       font-size: 16px;
       cursor: pointer;
       transition: 0.25s;
       margin-top: 8px;
     }
     .btn:hover {
-      background: #4dabf7;
+      filter: brightness(0.95);
     }
     .back {
-      background: #f1f3f5;
-      color: #555;
+      background: #e9e1e6;
+      color: #66555c;
     }
   </style>
 </head>
