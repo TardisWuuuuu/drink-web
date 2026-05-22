@@ -23,6 +23,7 @@
     .btn {width:100%;padding:12px;border:none;border-radius:10px;background:var(--mac-pink);color:#704258;font-size:16px;cursor:pointer;transition:0.25s;margin-top:8px}
     .btn:hover {filter:brightness(0.95)}
     .back {background:#e9e1e6;color:#66555c}
+    .tip {margin-top:10px;color:red;text-align:center}
   </style>
 </head>
 <body>
@@ -44,39 +45,82 @@
   </div>
   <div class="item"><label>加料</label><input id="topping" placeholder="珍珠、椰果等"></div>
   <div class="item"><label>口感描述</label><textarea id="desc" rows="4"></textarea></div>
-  <button class="btn" onclick="save()">提交投稿</button>
+
+  <button class="btn" id="submitBtn">提交投稿</button>
   <button class="btn back" onclick="location.href='index.html'">返回首页</button>
+  <div class="tip" id="tip"></div>
 </div>
 
 <script>
-async function save(){
-  let brand=brand.value.trim(),name=name.value.trim();
-  let sugar=sugar.value,ice=ice.value,topping=topping.value.trim(),desc=desc.value.trim();
-  if(!brand||!name){alert("请填写品牌和名称");return}
-  let res=await fetch("/getAllData",{cache:"no-cache"});
-  let data=await res.json();
-  let list=data.list||[];
-  let edit=localStorage.getItem("editDrink");
-  if(edit){
-    let idx=JSON.parse(edit).idx;
-    list[idx]={brand,name,sugar,ice,topping,desc,scores:[],comments:[]};
-    localStorage.removeItem("editDrink");
-  }else{
-    list.push({brand,name,sugar,ice,topping,desc,scores:[],comments:[]});
+const tip = document.getElementById('tip');
+const submitBtn = document.getElementById('submitBtn');
+
+async function save() {
+  tip.innerText = '';
+  const brand = brand.value.trim();
+  const name = name.value.trim();
+  const sugar = sugar.value;
+  const ice = ice.value;
+  const topping = topping.value.trim();
+  const desc = desc.value.trim();
+
+  if (!brand || !name) {
+    tip.innerText = '请填写品牌和名称';
+    return;
   }
-  await fetch("/setAllData",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({list})
-  });
-  alert("投稿成功");
-  location.href="index.html";
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = '提交中...';
+
+  try {
+    // 1. 获取最新列表
+    const res = await fetch("/getAllData", { cache: "no-cache" });
+    if (!res.ok) throw new Error('服务器响应异常');
+    const data = await res.json();
+    let list = data.list || [];
+
+    // 2. 是否编辑
+    const edit = localStorage.getItem("editDrink");
+    if (edit) {
+      const idx = JSON.parse(edit).idx;
+      list[idx] = { brand, name, sugar, ice, topping, desc, scores: [], comments: [] };
+      localStorage.removeItem("editDrink");
+    } else {
+      list.push({ brand, name, sugar, ice, topping, desc, scores: [], comments: [] });
+    }
+
+    // 3. 保存回服务器
+    const saveRes = await fetch("/setAllData", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ list })
+    });
+
+    if (!saveRes.ok) throw new Error('保存失败');
+
+    alert("投稿成功！");
+    location.href = "index.html";
+  } catch (e) {
+    console.error(e);
+    tip.innerText = '投稿失败：' + e.message;
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerText = '提交投稿';
+  }
 }
-window.onload=async function(){
-  let edit=localStorage.getItem("editDrink");
-  if(!edit)return;
-  let d=JSON.parse(edit);
-  brand.value=d.brand;name.value=d.name;sugar.value=d.sugar;ice.value=d.ice;topping.value=d.topping;desc.value=d.desc;
+
+submitBtn.addEventListener('click', save);
+
+window.onload = async function () {
+  const edit = localStorage.getItem("editDrink");
+  if (!edit) return;
+  const d = JSON.parse(edit);
+  brand.value = d.brand;
+  name.value = d.name;
+  sugar.value = d.sugar;
+  ice.value = d.ice;
+  topping.value = d.topping;
+  desc.value = d.desc;
 }
 </script>
 </body>
